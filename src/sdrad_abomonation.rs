@@ -280,7 +280,7 @@ macro_rules! sdrad_collect_ret {
 macro_rules! sdrad_collect_ret_try {
 	($udi:expr, $buf:ident, fn $f:ident($($x:tt)*) ->$rettype:ty) => {{
 		if $buf.is_null() {
-			let rsp :i64 = sdrad_get_stack_offset($udi);
+			let rsp :i64 = sdrad_get_stack_base_address($udi);
 			$buf = rsp as *mut i64;
 		}
 		let mut sr = StackBufReader::new($buf as *mut c_void).unwrap();
@@ -311,7 +311,7 @@ macro_rules! sdrad_push_args {
 	($udi:expr, $buf_ptr:ident, fn $f:ident($($x:tt)+)) => {{
 		let mut vec = Vec::new_in(SdradAllocatorFake{ data_domain_id: $udi});
 		sdrad_push_function_args!(vec, $($x)*);
-		let rsp :i64 = sdrad_get_stack_offset($udi);
+		let rsp :i64 = sdrad_get_stack_base_address($udi);
 		$buf_ptr = rsp as *mut i64;
 		let mut sw = StackBufWriter::new($buf_ptr as *mut c_void).unwrap();
 		sw.put(vec.capacity() as i64);
@@ -376,14 +376,14 @@ macro_rules! sdrad_pull_args_run {
 	}};
 
 	($udi:expr, fn $f:ident() $(->$rettype:ty)?) => {{
-		let rsp :i64 = sdrad_get_stack_offset($udi);
+		let rsp :i64 = sdrad_get_stack_base_address($udi);
 		let mut rsp_ptr = rsp as *mut i64;
 		sdrad_run_function!($udi, rsp_ptr, fn $f() $(->$rettype)?);
 	}};
 
 
 	($udi:expr, fn $f:ident($($x:tt)*) $(->$rettype:ty)? ) => {{
-		let rsp :i64 = sdrad_get_stack_offset($udi);
+		let rsp :i64 = sdrad_get_stack_base_address($udi);
 		let mut rsp_ptr = rsp as *mut i64;
 		let mut sr = StackBufReader::new(rsp_ptr as *mut c_void).unwrap();
 		let capacity = sr.retrieve::<i64>();

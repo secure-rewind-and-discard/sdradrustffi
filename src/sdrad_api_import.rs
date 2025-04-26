@@ -33,7 +33,7 @@ extern "C" {
     pub fn sdrad_malloc(udi: u64, size_t: libc::size_t) -> *mut u8;
     pub fn sdrad_realloc(udi: u64, ptr: *mut libc::c_void, size_t: isize) -> *mut u8;
     pub fn sdrad_free(udi: u64, ptr: *mut libc::c_void);
-    pub fn sdrad_get_stack_offset(udi: u64) -> i64;
+    pub fn sdrad_get_stack_base_address(udi: u64) -> i64;
     pub fn sdrad_set_stack_offset(udi: u64, rsp: u64);
     pub fn sdrad_dprotect(
         target_domain_index: u64,
